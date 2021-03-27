@@ -1,0 +1,46 @@
+{
+ "actions": [],
+ "creation": "2021-03-27 14:31:26.181498",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "currency",
+  "count",
+  "total"
+ ],
+ "fields": [
+  {
+   "fieldname": "currency",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "count",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Count"
+  },
+  {
+   "fieldname": "total",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Total"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2021-03-27 15:00:33.793454",
+ "modified_by": "Administrator",
+ "module": "rpricemill",
+ "name": "Denominations",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

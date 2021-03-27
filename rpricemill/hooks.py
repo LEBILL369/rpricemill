@@ -143,3 +143,13 @@ app_license = "MIT"
 #
 # auto_cancel_exempted_doctypes = ["Auto Repeat"]
 
+doc_events = {
+	"Contact": {
+		"before_save": "rpricemill.custom.contact_before_save"
+	},
+	"Sales Invoice" : {
+		"on_submit" : "rpricemill.custom.update_loyality"
+	}
+}
+
+doctype_js = {"POS Closing Entry" : "rpricemill/custom_scripts/denominations.js"}
