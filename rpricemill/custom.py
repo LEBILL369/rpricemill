@@ -15,7 +15,11 @@ def contact_before_save(doc, action):
 				else:
 					nos.append(num.phone)
 			else:
-				frappe.throw('Phone Number already linked to Contact: ' + get_link_to_form('Contact', con_parent))
+				link_name = frappe.db.get_value('Dynamic Link', {'link_doctype': 'Customer', 'parenttype': 'Contact', 'parent': con_parent}, 'link_name')
+				if link_name:
+					frappe.throw('Phone Number already linked to Customer: ' + get_link_to_form('Customer', link_name))
+				else:
+					frappe.throw('Phone Number already linked to Contact: ' + get_link_to_form('Contact', link_name))
 						
 def update_loyality(doc,action):
 	loyalty = frappe.get_doc("Customer", doc.customer)
