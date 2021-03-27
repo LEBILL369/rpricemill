@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include rpricemill *.css
+recursive-include rpricemill *.csv
+recursive-include rpricemill *.html
+recursive-include rpricemill *.ico
+recursive-include rpricemill *.js
+recursive-include rpricemill *.json
+recursive-include rpricemill *.md
+recursive-include rpricemill *.png
+recursive-include rpricemill *.py
+recursive-include rpricemill *.svg
+recursive-include rpricemill *.txt
+recursive-exclude rpricemill *.pyc
