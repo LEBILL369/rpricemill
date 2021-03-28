@@ -30,8 +30,8 @@ def update_loyality(doc,action):
 		if(if_loyalty.loyalty_program_based_on_item == 1):
 			for ite in doc.items:
 				item = frappe.get_doc("Item", ite.item_code)
-				if(item.loyalty_point):
-					value += (int(item.loyalty_point) * int(item.valuation_boost)) * int(ite.qty)
+				if(item.loyalty_points):
+					value += (int(item.loyalty_points) * int(item.loyalty_points_booster)) * int(ite.qty)
 		point_entry = frappe.db.sql("select name from `tabLoyalty Point Entry` where invoice = %s",(doc.name))
 		if(len(point_entry)):
 			if(doc.redeem_loyalty_points == 0):
