@@ -9,7 +9,7 @@ frappe.ui.form.on('POS Closing Entry', {
     get_current_balance: function (frm) {
         for (var i = 0; i < (frm.doc.payment_reconciliation).length; i++) {
             frappe.call({
-                method: "rpricemill_customizations.custom.get_current_balance",
+                method: "rpricemill.custom.get_current_balance",
                 args: {
                     company: frm.doc.company,
                     freeze: true,
