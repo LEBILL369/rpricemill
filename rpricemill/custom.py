@@ -20,21 +20,21 @@ def contact_before_save(doc, action):
 						
 def update_loyality(doc,action):
 	loyalty = frappe.get_doc("Customer", doc.customer)
+	value = 0
 	if(loyalty.loyalty_program):
 		if_loyalty = frappe.get_doc("Loyalty Program", loyalty.loyalty_program)
-	value = 0
-	if(if_loyalty.loyalty_program_based_on_item == 1):
-		for ele in range(len(doc.items)):
-			item = frappe.get_doc("Item",doc.items[ele].item_code)
-			if(item.loyalty_point):
-				value += (int(item.loyalty_point) * int(item.valuation_boost)) * int(doc.items[ele].qty)
-	point_entry = frappe.db.sql("select name from `tabLoyalty Point Entry` where invoice = %s",(doc.name))
-	if(len(point_entry)):
-		if(doc.redeem_loyalty_points == 0):
-			val_point = frappe.get_doc("Loyalty Point Entry",point_entry[0][0])
-			val_point.loyalty_points = value
-			# frappe.db.set_value("Loyalty Point Entry",point_entry[0][0],"")
-			val_point.save(ignore_permissions=True)
+		if(if_loyalty.loyalty_program_based_on_item == 1):
+			for ite in doc.items:
+				item = frappe.get_doc("Item", ite.item_code)
+				if(item.loyalty_point):
+					value += (int(item.loyalty_point) * int(item.valuation_boost)) * int(ite.qty)
+		point_entry = frappe.db.sql("select name from `tabLoyalty Point Entry` where invoice = %s",(doc.name))
+		if(len(point_entry)):
+			if(doc.redeem_loyalty_points == 0):
+				val_point = frappe.get_doc("Loyalty Point Entry",point_entry[0][0])
+				val_point.loyalty_points = value
+				# frappe.db.set_value("Loyalty Point Entry",point_entry[0][0],"")
+				val_point.save()
 
 @frappe.whitelist()
 def get_current_balance(company,mode_of_pay,idx):
