@@ -18,7 +18,7 @@ frappe.ui.form.on('POS Closing Entry', {
                 },
                 callback: function (r) {
                     if (r.message) {
-                        frm.doc.payment_reconciliation[r.message[1]].current_balance = r.message[0]
+                        frm.doc.payment_reconciliation[r.message[1]].expected_amount = r.message[0]
                         frm.refresh_fields();
                     }
                 }
