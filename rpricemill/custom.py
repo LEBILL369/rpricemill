@@ -41,7 +41,7 @@ def update_loyality(doc,action):
 				val_point.save()
 
 def update_loyalty_account(doc, action):
-	if(doc.redeem_loyalty_points == 0):
+	if(doc.redeem_loyalty_points == 1):
 		acc = frappe.db.get_value('Company', doc.company, 'loyalty_redemption_expense_account')
 		cost_center = frappe.db.get_value('Company', doc.company, 'cost_center')
 		if not doc.loyalty_redemption_account:
