@@ -40,6 +40,7 @@ def update_loyality(doc,action):
 				# frappe.db.set_value("Loyalty Point Entry",point_entry[0][0],"")
 				val_point.save()
 
+@frappe.whitelist()
 def update_loyalty_account(doc, action):
 	if(doc.redeem_loyalty_points == 1):
 		acc = frappe.db.get_value('Company', doc.company, 'loyalty_redemption_expense_account')
@@ -48,6 +49,17 @@ def update_loyalty_account(doc, action):
 			doc.loyalty_redemption_account = acc
 		if not doc.loyalty_redemption_cost_center:
 			doc.loyalty_redemption_cost_center = cost_center
+
+@frappe.whitelist()
+def get_all_balances(pos_profile):
+	payments = frappe.db.get_list('POS Payment Method', {'parent': pos_profile}, 'mode_of_payment')
+	company = frappe.db.get_value('POS Profile', pos_profile, 'company')
+	res = {}
+	for payment in payments:
+		if payment.mode_of_payment:
+			balance, idx = get_current_balance(company, payment.mode_of_payment, 0)
+			res[payment.mode_of_payment] = balance
+	return res
 
 
 @frappe.whitelist()
