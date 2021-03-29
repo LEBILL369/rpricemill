@@ -149,6 +149,9 @@ doc_events = {
 	},
 	"Sales Invoice" : {
 		"on_submit" : "rpricemill.custom.update_loyality"
+	},
+	"POS Invoice" : {
+		"on_submit" : "rpricemill.custom.update_loyality"
 	}
 }
 
