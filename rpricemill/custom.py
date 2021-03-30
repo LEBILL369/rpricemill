@@ -72,20 +72,21 @@ def get_current_balance(company,mode_of_pay,idx):
 
 @frappe.whitelist()
 def get_customer_data(customer):
-	doc = frappe.get_doc("Customer",customer)
-	data_points = get_dashboard_info(doc.doctype, doc.name, doc.loyalty_program)
-	res = {
-		'total_unpaid': 0,
-		'billing_this_year': 0,
-		'info': ''
-	}
-	for data_point in data_points:
-		if data_point['total_unpaid']:
-			res['total_unpaid'] += data_point['total_unpaid']
-		if data_point['billing_this_year']:
-			res['billing_this_year'] += data_point['billing_this_year']
-		res['info'] += f"Company: {data_point['company']}, \n Outstanding: {data_point['total_unpaid']}, \n Turn Over: {data_point['billing_this_year']}, \n Loyalty Points: {data_point['loyalty_points']} \n\n"
-	return res
+	if customer:
+		doc = frappe.get_doc("Customer",customer)
+		data_points = get_dashboard_info(doc.doctype, doc.name, doc.loyalty_program)
+		res = {
+			'total_unpaid': 0,
+			'billing_this_year': 0,
+			'info': ''
+		}
+		for data_point in data_points:
+			if data_point['total_unpaid']:
+				res['total_unpaid'] += data_point['total_unpaid']
+			if data_point['billing_this_year']:
+				res['billing_this_year'] += data_point['billing_this_year']
+			res['info'] += f"Company: {data_point['company']}, \n Outstanding: {data_point['total_unpaid']}, \n Turn Over: {data_point['billing_this_year']}, \n Loyalty Points: {data_point['loyalty_points']} \n\n"
+		return res
 
 @frappe.whitelist()
 def get_account(company):
