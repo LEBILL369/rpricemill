@@ -154,6 +154,9 @@ doc_events = {
 	"POS Invoice" : {
 		"on_submit" : "rpricemill.custom.update_loyality",
 		"validate": "rpricemill.custom.update_loyalty_account"
+	},
+	"Customer": {
+		"validate": "rpricemill.custom.add_mobile_search",
 	}
 }
 

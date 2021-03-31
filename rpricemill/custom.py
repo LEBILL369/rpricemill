@@ -32,13 +32,12 @@ def update_loyality(doc,action):
 				item = frappe.get_doc("Item", ite.item_code)
 				if(item.loyalty_points):
 					value += (int(item.loyalty_points) * int(item.loyalty_points_booster)) * int(ite.qty)
-		point_entry = frappe.db.sql("select name from `tabLoyalty Point Entry` where invoice = %s",(doc.name))
+		point_entry = frappe.db.sql("select name from `tabLoyalty Point Entry` where invoice = %s and redeem_against is null",(doc.name))
 		if(len(point_entry)):
-			if(doc.redeem_loyalty_points == 0):
-				val_point = frappe.get_doc("Loyalty Point Entry",point_entry[0][0])
-				val_point.loyalty_points = value
-				# frappe.db.set_value("Loyalty Point Entry",point_entry[0][0],"")
-				val_point.save()
+			val_point = frappe.get_doc("Loyalty Point Entry",point_entry[0][0])
+			val_point.loyalty_points = value
+			# frappe.db.set_value("Loyalty Point Entry",point_entry[0][0],"")
+			val_point.save()
 
 @frappe.whitelist()
 def update_loyalty_account(doc, action):
@@ -85,6 +84,8 @@ def get_customer_data(customer):
 				res['total_unpaid'] += data_point['total_unpaid']
 			if data_point['billing_this_year']:
 				res['billing_this_year'] += data_point['billing_this_year']
+			if not data_point['loyalty_points']:
+				data_point['loyalty_points'] = 0
 			res['info'] += f"Company: {data_point['company']}, \n Outstanding: {data_point['total_unpaid']}, \n Turn Over: {data_point['billing_this_year']}, \n Loyalty Points: {data_point['loyalty_points']} \n\n"
 		return res
 
@@ -92,3 +93,16 @@ def get_customer_data(customer):
 def get_account(company):
 	doc = frappe.get_doc("Company",company)
 	return(doc.loyalty_redemption_expense_account)
+
+
+def add_mobile_search(doc, action):
+	phone_numbers = frappe.db.sql("""select group_concat(phone.phone) as all_numbers from tabCustomer as customer inner join
+																		`tabContact Phone` as phone
+																		inner join `tabContact` as contact on contact.name = phone.parent
+																		inner join `tabDynamic Link` as dl on dl.link_doctype = 'Customer' and dl.parenttype = 'Contact'
+																		and dl.link_name = customer.name and dl.parent = contact.name
+																		where customer.name = %s
+																		group by phone.phone""", doc.name, as_dict = 1)
+	if len(phone_numbers):
+		if 'all_numbers' in phone_numbers[0]:
+			doc.mobile_search = phone_numbers[0]['all_numbers']
