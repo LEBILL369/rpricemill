@@ -110,7 +110,7 @@ def add_mobile_search(doc, action):
 			doc.mobile_search = phone_numbers[0]['all_numbers']
 
 def get_fiscal_year_short_form():
-	return f"{get_fiscal_year()['name'].split('-')[0][2:]}-{get_fiscal_year()['name'].split('-')[1][2:]}"
+	return get_fiscal_year()['name']
 
 
 
