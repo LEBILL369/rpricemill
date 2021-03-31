@@ -149,14 +149,31 @@ doc_events = {
 	},
 	"Sales Invoice" : {
 		"on_submit" : "rpricemill.custom.update_loyality",
-		"validate": "rpricemill.custom.update_loyalty_account"
+		"validate": "rpricemill.custom.update_loyalty_account",
+		"autoname": "rpricemill.custom.name_sales_invoice"
 	},
 	"POS Invoice" : {
 		"on_submit" : "rpricemill.custom.update_loyality",
-		"validate": "rpricemill.custom.update_loyalty_account"
+		"validate": "rpricemill.custom.update_loyalty_account",
+		"autoname": "rpricemill.custom.name_pos_invoice"
 	},
 	"Customer": {
 		"validate": "rpricemill.custom.add_mobile_search",
+	},
+	"Purchase Order": {
+		"autoname": "rpricemill.custom.name_purchase_order"
+	},
+	"Purchase Receipt": {
+		"autoname": "rpricemill.custom.name_purchase_receipt"
+	},
+	"Purchase Invoice": {
+		"autoname": "rpricemill.custom.name_purchase_invoice"
+	},
+	"Sales Order": {
+		"autoname": "rpricemill.custom.name_sales_order"
+	},
+	"Payment Entry": {
+		"autoname": "rpricemill.custom.name_payment_entry"
 	}
 }
 

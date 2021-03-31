@@ -4,6 +4,7 @@ from frappe.model.document import Document
 from frappe.utils import comma_and,get_link_to_form
 from erpnext.accounts.utils import get_balance_on
 from erpnext.accounts.party import  get_dashboard_info
+from frappe.model.naming import parse_naming_series
 
 def contact_before_save(doc, action):
 	nos = []
@@ -106,3 +107,35 @@ def add_mobile_search(doc, action):
 	if len(phone_numbers):
 		if 'all_numbers' in phone_numbers[0]:
 			doc.mobile_search = phone_numbers[0]['all_numbers']
+
+
+def name_sales_invoice(doc, action):
+	abbr = frappe.get_cached_value('Company',  doc.company,  'abbr')
+	if doc.is_pos:
+		doc.name = parse_naming_series(f'ACC-POSINV-{abbr}-2021-.#####')
+	else:
+		doc.name = parse_naming_series(f'ACC-SINV-{abbr}-2021-.#####')
+	
+def name_sales_order(doc, action):
+	abbr = frappe.get_cached_value('Company',  doc.company,  'abbr')
+	doc.name = parse_naming_series(f"SAL-ORD-{abbr}-2021-.#####")
+
+def name_purchase_order(doc, action):
+	abbr = frappe.get_cached_value('Company',  doc.company,  'abbr')
+	doc.name = parse_naming_series(f"PUR-ORD-{abbr}-2021-.#####")
+
+def name_purchase_invoice(doc, action):
+	abbr = frappe.get_cached_value('Company',  doc.company,  'abbr')
+	doc.name = parse_naming_series(f"ACC-PINV-{abbr}-2021-.#####")
+
+def name_purchase_receipt(doc, action):
+	abbr = frappe.get_cached_value('Company',  doc.company,  'abbr')
+	doc.name = parse_naming_series(f"MAT-PRE-{abbr}-2021-.#####")
+
+def name_payment_entry(doc, action):
+	abbr = frappe.get_cached_value('Company',  doc.company,  'abbr')
+	doc.name = parse_naming_series(f"ACC-PAY-{abbr}-2021-.#####")
+
+def name_pos_invoice(doc, action):
+	abbr = frappe.get_cached_value('Company',  doc.company,  'abbr')
+	doc.name = parse_naming_series(f"ACC-PINV-{abbr}-2021-.#####")
