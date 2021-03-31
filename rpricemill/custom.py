@@ -84,7 +84,7 @@ def get_customer_data(customer):
 				res['total_unpaid'] += data_point['total_unpaid']
 			if data_point['billing_this_year']:
 				res['billing_this_year'] += data_point['billing_this_year']
-			if not data_point['loyalty_points']:
+			if 'loyalty_points' not in data_point:
 				data_point['loyalty_points'] = 0
 			res['info'] += f"Company: {data_point['company']}, \n Outstanding: {data_point['total_unpaid']}, \n Turn Over: {data_point['billing_this_year']}, \n Loyalty Points: {data_point['loyalty_points']} \n\n"
 		return res
