@@ -5,6 +5,7 @@ from frappe.utils import comma_and,get_link_to_form
 from erpnext.accounts.utils import get_balance_on
 from erpnext.accounts.party import  get_dashboard_info
 from frappe.model.naming import parse_naming_series
+from erpnext.accounts.utils import get_fiscal_year
 
 def contact_before_save(doc, action):
 	nos = []
@@ -108,34 +109,45 @@ def add_mobile_search(doc, action):
 		if 'all_numbers' in phone_numbers[0]:
 			doc.mobile_search = phone_numbers[0]['all_numbers']
 
+def get_fiscal_year_short_form():
+	return f"{get_fiscal_year()['name'].split('-')[0][2:]}-{get_fiscal_year()['name'].split('-')[1][2:]}"
+
+
 
 def name_sales_invoice(doc, action):
 	abbr = frappe.get_cached_value('Company',  doc.company,  'abbr')
+	fy = get_fiscal_year_short_form()
 	if doc.is_pos:
-		doc.name = parse_naming_series(f'ACC-POSINV-{abbr}-2021-.#####')
+		doc.name = parse_naming_series(f'ACC-POSINV-{abbr}-{fy}-.#####')
 	else:
-		doc.name = parse_naming_series(f'ACC-SINV-{abbr}-2021-.#####')
+		doc.name = parse_naming_series(f'ACC-SINV-{abbr}-{fy}-.#####')
 	
 def name_sales_order(doc, action):
+	fy = get_fiscal_year_short_form()
 	abbr = frappe.get_cached_value('Company',  doc.company,  'abbr')
-	doc.name = parse_naming_series(f"SAL-ORD-{abbr}-2021-.#####")
+	doc.name = parse_naming_series(f"SAL-ORD-{abbr}-{fy}-.#####")
 
 def name_purchase_order(doc, action):
+	fy = get_fiscal_year_short_form()
 	abbr = frappe.get_cached_value('Company',  doc.company,  'abbr')
-	doc.name = parse_naming_series(f"PUR-ORD-{abbr}-2021-.#####")
+	doc.name = parse_naming_series(f"PUR-ORD-{abbr}-{fy}-.#####")
 
 def name_purchase_invoice(doc, action):
+	fy = get_fiscal_year_short_form()
 	abbr = frappe.get_cached_value('Company',  doc.company,  'abbr')
-	doc.name = parse_naming_series(f"ACC-PINV-{abbr}-2021-.#####")
+	doc.name = parse_naming_series(f"ACC-PINV-{abbr}-{fy}-.#####")
 
 def name_purchase_receipt(doc, action):
+	fy = get_fiscal_year_short_form()
 	abbr = frappe.get_cached_value('Company',  doc.company,  'abbr')
-	doc.name = parse_naming_series(f"MAT-PRE-{abbr}-2021-.#####")
+	doc.name = parse_naming_series(f"MAT-PRE-{abbr}-{fy}-.#####")
 
 def name_payment_entry(doc, action):
+	fy = get_fiscal_year_short_form()
 	abbr = frappe.get_cached_value('Company',  doc.company,  'abbr')
-	doc.name = parse_naming_series(f"ACC-PAY-{abbr}-2021-.#####")
+	doc.name = parse_naming_series(f"ACC-PAY-{abbr}-{fy}-.#####")
 
 def name_pos_invoice(doc, action):
+	fy = get_fiscal_year_short_form()
 	abbr = frappe.get_cached_value('Company',  doc.company,  'abbr')
-	doc.name = parse_naming_series(f"ACC-PINV-{abbr}-2021-.#####")
+	doc.name = parse_naming_series(f"ACC-PINV-{abbr}-{fy}-.#####")
