@@ -39,7 +39,7 @@ def update_loyality(doc,action):
 			val_point = frappe.get_doc("Loyalty Point Entry",point_entry[0][0])
 			val_point.loyalty_points = value
 			# frappe.db.set_value("Loyalty Point Entry",point_entry[0][0],"")
-			val_point.save()
+			val_point.save(ignore_permissions=True)
 
 @frappe.whitelist()
 def update_loyalty_account(doc, action):
@@ -67,7 +67,7 @@ def get_all_balances(pos_profile):
 def get_current_balance(company,mode_of_pay,idx):
 	doc = frappe.db.sql("""select mpa.default_account from `tabMode of Payment` as mp inner join `tabMode of Payment Account` as mpa on mpa.parent = mp.name where mpa.company = %s and mp.name = %s""",(company,mode_of_pay))
 	if(len(doc)):
-		current_balance = get_balance_on(account = doc[0][0],company = company)
+		current_balance = get_balance_on(account = doc[0][0],company = company, ignore_account_permission=True)
 		return(current_balance,int(idx))
 
 
