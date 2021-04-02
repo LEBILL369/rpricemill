@@ -111,7 +111,7 @@ def add_mobile_search(doc, action):
 
 def get_fiscal_year_short_form():
 	fy = get_fiscal_year()['name']
-	return fy.split('-')[0][2:] + fy.split('-')[1][2:]
+	return fy.split('-')[0][2:]
 
 
 
@@ -119,36 +119,36 @@ def name_sales_invoice(doc, action):
 	abbr = frappe.get_cached_value('Company',  doc.company,  'abbr')
 	fy = get_fiscal_year_short_form()
 	if doc.is_pos:
-		doc.name = parse_naming_series(f'{abbr}-POSI-{fy}-.######')
+		doc.name = parse_naming_series(f'{abbr}POSI{fy}-.######')
 	else:
-		doc.name = parse_naming_series(f'{abbr}-SI-{fy}-.######')
+		doc.name = parse_naming_series(f'{abbr}SI{fy}-.######')
 	
 def name_sales_order(doc, action):
 	fy = get_fiscal_year_short_form()
 	abbr = frappe.get_cached_value('Company',  doc.company,  'abbr')
-	doc.name = parse_naming_series(f"{abbr}-SO-{fy}-.######")
+	doc.name = parse_naming_series(f"{abbr}SO{fy}-.######")
 
 def name_purchase_order(doc, action):
 	fy = get_fiscal_year_short_form()
 	abbr = frappe.get_cached_value('Company',  doc.company,  'abbr')
-	doc.name = parse_naming_series(f"{abbr}-PO-{fy}-.######")
+	doc.name = parse_naming_series(f"{abbr}PO{fy}-.######")
 
 def name_purchase_invoice(doc, action):
 	fy = get_fiscal_year_short_form()
 	abbr = frappe.get_cached_value('Company',  doc.company,  'abbr')
-	doc.name = parse_naming_series(f"{abbr}-PI-{fy}-.######")
+	doc.name = parse_naming_series(f"{abbr}PI{fy}-.######")
 
 def name_purchase_receipt(doc, action):
 	fy = get_fiscal_year_short_form()
 	abbr = frappe.get_cached_value('Company',  doc.company,  'abbr')
-	doc.name = parse_naming_series(f"{abbr}-PR-{fy}-.######")
+	doc.name = parse_naming_series(f"{abbr}PR{fy}-.######")
 
 def name_payment_entry(doc, action):
 	fy = get_fiscal_year_short_form()
 	abbr = frappe.get_cached_value('Company',  doc.company,  'abbr')
-	doc.name = parse_naming_series(f"{abbr}-PAY-{fy}-.######")
+	doc.name = parse_naming_series(f"{abbr}PAY{fy}-.######")
 
 def name_pos_invoice(doc, action):
 	fy = get_fiscal_year_short_form()
 	abbr = frappe.get_cached_value('Company',  doc.company,  'abbr')
-	doc.name = parse_naming_series(f"{abbr}-POI-{fy}-.######")
+	doc.name = parse_naming_series(f"{abbr}POI{fy}-.######")
