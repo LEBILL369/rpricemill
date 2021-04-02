@@ -110,7 +110,7 @@ def add_mobile_search(doc, action):
 			doc.mobile_search = phone_numbers[0]['all_numbers']
 
 def get_fiscal_year_short_form():
-	fy = get_fiscal_year()['name']
+	fy =  frappe.db.get_single_value('Global Defaults', 'current_fiscal_year')
 	return fy.split('-')[0][2:]
 
 
