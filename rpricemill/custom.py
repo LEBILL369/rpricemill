@@ -121,11 +121,14 @@ def add_mobile_search(doc, action):
 			doc.mobile_search = phone_numbers[0]['all_numbers']
 
 def add_vehicle_log(doc, action):
-	if doc.delivering_driver and doc.vehicle and doc.current_odometer_value:
+	if doc.delivering_driver and doc.vehicle and (doc.current_odometer_value or doc.return_odometer_value):
 		vehicle_log = frappe.new_doc('Vehicle Log')
 		vehicle_log.license_plate = doc.vehicle
 		vehicle_log.employee = frappe.db.get_value('Driver', doc.delivering_driver, 'employee')
-		vehicle_log.odometer = doc.current_odometer_value
+		if doc.return_odometer_value:
+			vehicle_log.odometer = doc.return_odometer_value
+		elif doc.current_odometer_value:
+			vehicle_log.odometer = doc.current_odometer_value
 		vehicle_log.date = doc.posting_date
 		vehicle_log.purpose = 'Sales Delivery'
 		vehicle_log.remarks = doc.name
