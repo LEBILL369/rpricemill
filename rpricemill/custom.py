@@ -120,6 +120,15 @@ def add_mobile_search(doc, action):
 		if 'all_numbers' in phone_numbers[0]:
 			doc.mobile_search = phone_numbers[0]['all_numbers']
 
+def add_vehicle_log(doc, action):
+	if doc.delivering_driver and doc.vehicle and doc.current_odometer_value:
+		vehicle_log = frappe.new_doc('Vehicle Log')
+		vehicle_log.license_plate = doc.vehicle
+		vehicle_log.employee = frappe.db.get_value('Driver', doc.delivering_driver, 'employee')
+		vehicle_log.odometer = doc.current_odometer_value
+		vehicle_log.data = doc.posting_date
+		vehicle_log.save()
+		vehicle_log.submit()
 def get_fiscal_year_short_form():
 	fy =  frappe.db.get_single_value('Global Defaults', 'current_fiscal_year')
 	return fy.split('-')[0][2:]
