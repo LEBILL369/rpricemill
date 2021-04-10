@@ -179,5 +179,6 @@ doc_events = {
 
 doctype_js = {
 	"POS Closing Entry" : "rpricemill/custom_scripts/denominations.js",
-	"Sales Invoice": "rpricemill/custom_scripts/sales_invoice.js"
+	"Sales Invoice": "rpricemill/custom_scripts/sales_invoice.js",
+	"Sales Order" :  "rpricemill/custom_scripts/sales_order.js"
 	}

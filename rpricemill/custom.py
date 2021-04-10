@@ -163,3 +163,7 @@ def name_pos_invoice(doc, action):
 	fy = get_fiscal_year_short_form()
 	abbr = frappe.get_cached_value('Company',  doc.company,  'abbr')
 	doc.name = parse_naming_series(f"{abbr}POI{fy}-.######")
+
+@frappe.whitelist()
+def get_address(store_branch):
+	return(frappe.get_value("Address",{"store_branch" : store_branch},'name'))
