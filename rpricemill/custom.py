@@ -127,6 +127,8 @@ def add_vehicle_log(doc, action):
 		vehicle_log.employee = frappe.db.get_value('Driver', doc.delivering_driver, 'employee')
 		vehicle_log.odometer = doc.current_odometer_value
 		vehicle_log.date = doc.posting_date
+		vehicle_log.purpose = 'Sales Delivery'
+		vehicle_log.remarks = doc.name
 		vehicle_log.save()
 		vehicle_log.submit()
 def get_fiscal_year_short_form():
