@@ -44,6 +44,7 @@ def update_loyality(doc,action):
 
 @frappe.whitelist()
 def update_loyalty_account(doc, action):
+	import pdb;pdb.set_trace()
 	if(doc.redeem_loyalty_points == 1):
 		redeem_amount = 0
 		for item in doc.items:
