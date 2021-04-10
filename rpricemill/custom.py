@@ -33,8 +33,8 @@ def update_loyality(doc,action):
 			for ite in doc.items:
 				if frappe.db.exists('Item', ite.item_code):
 					item = frappe.get_doc("Item", ite.item_code)
-					if(item.loyalty_points):
-						value += (int(item.loyalty_points) * int(item.loyalty_points_booster)) * int(ite.qty)
+					if(item.loyalty_points > 0):
+						value += (float(item.loyalty_points) * float(item.loyalty_points_booster)) * int(ite.qty)
 		point_entry = frappe.db.sql("select name from `tabLoyalty Point Entry` where invoice = %s and redeem_against is null",(doc.name))
 		if(len(point_entry)):
 			val_point = frappe.get_doc("Loyalty Point Entry",point_entry[0][0])
@@ -45,6 +45,12 @@ def update_loyality(doc,action):
 @frappe.whitelist()
 def update_loyalty_account(doc, action):
 	if(doc.redeem_loyalty_points == 1):
+		redeem_amount = 0
+		for item in doc.items:
+			if(frappe.get_value("Item",item.item_code,'eligible_for_redeem')):
+				redeem_amount += item.amount
+		if(redeem_amount < doc.loyalty_amount ):
+			frappe.throw("Loyalty points can only be used to redeem the eligible items.")
 		acc = frappe.db.get_value('Company', doc.company, 'loyalty_redemption_expense_account')
 		cost_center = frappe.db.get_value('Company', doc.company, 'cost_center')
 		if not doc.loyalty_redemption_account:
@@ -73,14 +79,15 @@ def get_current_balance(company,mode_of_pay,idx):
 
 
 @frappe.whitelist()
-def get_customer_data(customer):
+def get_customer_data(customer,company):
 	if customer:
 		doc = frappe.get_doc("Customer",customer)
 		data_points = get_dashboard_info(doc.doctype, doc.name, doc.loyalty_program)
 		res = {
 			'total_unpaid': 0,
 			'billing_this_year': 0,
-			'info': ''
+			'info': '',
+			'loyalty_points': 0
 		}
 		for data_point in data_points:
 			if data_point['total_unpaid']:
@@ -89,6 +96,9 @@ def get_customer_data(customer):
 				res['billing_this_year'] += data_point['billing_this_year']
 			if 'loyalty_points' not in data_point:
 				data_point['loyalty_points'] = 0
+			if 'loyalty_points' in data_point:
+				if company == data_point["company"]:
+					res['loyalty_points'] = data_point['loyalty_points']
 			res['info'] += f"Company: {data_point['company']}, \n Outstanding: {data_point['total_unpaid']}, \n Turn Over: {data_point['billing_this_year']}, \n Loyalty Points: {data_point['loyalty_points']} \n\n"
 		return res
 
