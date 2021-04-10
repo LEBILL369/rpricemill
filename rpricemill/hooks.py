@@ -148,7 +148,7 @@ doc_events = {
 		"before_save": "rpricemill.custom.contact_before_save"
 	},
 	"Sales Invoice" : {
-		"on_submit" : "rpricemill.custom.update_loyality",
+		"on_submit" : ["rpricemill.custom.update_loyality", "rpricemill.custom.add_vehicle_log"],
 		"validate": "rpricemill.custom.update_loyalty_account",
 		"autoname": "rpricemill.custom.name_sales_invoice"
 	},
