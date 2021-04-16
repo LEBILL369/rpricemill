@@ -178,6 +178,26 @@ def name_pos_invoice(doc, action):
 	abbr = frappe.get_cached_value('Company',  doc.company,  'abbr')
 	doc.name = parse_naming_series(f"{abbr}POI{fy}-.######")
 
+def get_gstno(doc,action):
+	gstin = frappe.get_value("Address",{"name" : doc.customer_address},['gstin'])
+	if gstin:
+		doc.gst_no = gstin
+	elif doc.tax_id:
+		doc.gst_no = doc.tax_id
+	else:
+		doc.gst_no = "  "
+	if(doc.total_unpaid):
+		doc.outstanding_pf = doc.total_unpaid
+	else:
+		data = 	get_customer_data(doc.customer,doc.company)
+		doc.outstanding_pf = data["total_unpaid"]
+	phone = frappe.db.sql("""select cp.phone from `tabContact Phone` as cp inner join (select con.name as conname from `tabContact` as con inner join `tabDynamic Link` as dl on dl.parent = con.name where dl.link_name = %s) as con on con.conname = cp.parent""",(doc.customer),as_list = 1)
+	number = ""
+	for no in range(len(phone)):
+		number += phone[no][0]
+		if(no != len(phone) - 1):
+			number += "," 
+	doc.mobile = number
 @frappe.whitelist()
 def get_address(store_branch):
 	return(frappe.get_value("Address",{"store_branch" : store_branch},'name'))
