@@ -199,6 +199,27 @@ def get_gstno(doc,action):
 		if(no != len(phone) - 1):
 			number += "," 
 	doc.mobile = number
+def scgst(doc,action):
+	for items in doc.items:
+		if items.item_tax_template:
+			sgst = 0
+			cgst = 0
+			tax = frappe.db.sql("""select ttd.tax_type,ttd.tax_rate from `tabItem Tax Template` as tt inner join `tabItem Tax Template Detail` as ttd on tt.name = ttd.parent where tt.name = %s""",(items.item_tax_template),as_dict = 1)
+			for _tax in tax:
+				data = _tax["tax_type"]
+				data = data.split(" - ")
+				if("SGST" in data):
+					sgst = _tax["tax_rate"]
+				elif("CGST" in data):
+					cgst = _tax["tax_rate"]
+				if sgst and cgst :
+					break
+			items.sgst = round(items.amount - (items.amount/(1 + (float(sgst)/100))),2)
+			items.cgst = round(items.amount - (items.amount/(1 + (float(cgst)/100))),2)
+
+		else:
+			items.sgst = 0
+			items.cgst = 0
 @frappe.whitelist()
 def get_address(store_branch):
 	return(frappe.get_value("Address",{"store_branch" : store_branch},'name'))
