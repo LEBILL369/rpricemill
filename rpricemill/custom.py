@@ -7,6 +7,8 @@ from erpnext.accounts.party import  get_dashboard_info
 from frappe.model.naming import parse_naming_series
 from erpnext.accounts.utils import get_fiscal_year
 from datetime import datetime, timedelta
+from frappe.utils import  get_link_to_form
+
 
 def contact_before_save(doc, action):
 	nos = []
@@ -47,8 +49,8 @@ def update_loyality(doc,action):
 	for data_point in data_points:
 		if data_point['total_unpaid']:
 			outstanding += data_point['total_unpaid']
-	if outstanding:
-		frappe.msgprint(doc.customer + " has an outstanding of " + str(outstanding))
+	if outstanding and doc.doctype == 'POS Invoice':
+		frappe.msgprint(get_link_to_form('Customer', doc.customer) + " has an outstanding of " + str(outstanding))
 
 @frappe.whitelist()
 def update_loyalty_account(doc, action):
