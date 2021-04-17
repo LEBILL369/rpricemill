@@ -158,6 +158,9 @@ doc_events = {
 		"validate": "rpricemill.custom.update_loyalty_account",
 		"autoname": "rpricemill.custom.name_pos_invoice"
 	},
+	"Vehicle": {
+		"validate": "rpricemill.custom.create_events_from_vehicle_remainder"
+	},
 	"Customer": {
 		"validate": "rpricemill.custom.add_mobile_search",
 	},

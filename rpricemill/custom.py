@@ -6,6 +6,7 @@ from erpnext.accounts.utils import get_balance_on
 from erpnext.accounts.party import  get_dashboard_info
 from frappe.model.naming import parse_naming_series
 from erpnext.accounts.utils import get_fiscal_year
+from datetime import datetime, timedelta
 
 def contact_before_save(doc, action):
 	nos = []
@@ -201,3 +202,65 @@ def get_gstno(doc,action):
 @frappe.whitelist()
 def get_address(store_branch):
 	return(frappe.get_value("Address",{"store_branch" : store_branch},'name'))
+
+
+@frappe.whitelist()
+def create_events_from_vehicle_remainder(doc, action):
+	if doc.remainders:
+		for prop in doc.remainders:
+			if frappe.db.exists('Event', {'vehicle': doc.name, 'remainder_property': prop.property}):
+				exisiting_event = frappe.get_doc('Event', {'vehicle': doc.name, 'remainder_property': prop.property})
+				if prop.remind_before_in_days:
+					start = datetime.combine(datetime.strptime(prop.date, '%Y-%m-%d') - timedelta(days=prop.remind_before_in_days), datetime.min.time())
+				else:
+					start = datetime.combine(datetime.strptime(prop.date, '%Y-%m-%d'), datetime.min.time())
+				if prop.assign_to:
+					is_present = 0
+					for participant in exisiting_event.event_participants:
+						if participant.reference_docname == prop.assign_to:
+							is_present = 1
+							break
+					if not is_present:
+						exisiting_event.append("event_participants", {
+							"reference_doctype": 'Employee',
+							"reference_docname": prop.assign_to,
+						})
+				exisiting_event.starts_on = start
+				exisiting_event.status = 'Open'
+				exisiting_event.all_day = 1
+				if prop.is_recurring:
+					exisiting_event.repeat_this_event = 1
+					exisiting_event.repeat_on = prop.repeat_on
+					exisiting_event.repeat_till = prop.repeat_till
+				else:
+					exisiting_event.repeat_this_event = 0
+				exisiting_event.description = prop.remarks
+				exisiting_event.save(ignore_permissions=True)
+			else:
+				event = frappe.new_doc('Event')
+				event.subject = doc.name + ' - ' + prop.property
+				event.event_category = 'Event'
+				event.event_type = 'Private'
+				event.vehicle = doc.name
+				event.remainder_property = prop.property
+				if prop.remind_before_in_days:
+					start = datetime.combine(datetime.strptime(prop.date, '%Y-%m-%d') - timedelta(days=prop.remind_before_in_days), datetime.min.time())
+				else:
+					start = datetime.combine(datetime.strptime(prop.date, '%Y-%m-%d'), datetime.min.time())
+
+				if prop.assign_to:
+					event.append("event_participants", {
+						"reference_doctype": 'Employee',
+						"reference_docname": prop.assign_to,
+					})
+				event.starts_on = start
+				event.status = 'Open'
+				event.all_day = 1
+				if prop.is_recurring:
+					event.repeat_this_event = 1
+					event.repeat_on = prop.repeat_on
+					event.repeat_till = prop.repeat_till
+				else:
+					event.repeat_this_event = 0
+				event.description = prop.remarks
+				event.save(ignore_permissions=True)
