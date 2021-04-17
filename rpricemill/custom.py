@@ -50,7 +50,8 @@ def update_loyality(doc,action):
 		if data_point['total_unpaid']:
 			outstanding += data_point['total_unpaid']
 	if outstanding and doc.doctype == 'POS Invoice':
-		frappe.msgprint(get_link_to_form('Customer', doc.customer) + " has an outstanding of " + str(outstanding))
+		customer_name = frappe.db.get_value('Customer', doc.customer, 'customer_name')
+		frappe.msgprint(get_link_to_form('Customer', doc.customer) + " - " + customer_name + " has an outstanding of " + str(outstanding))
 
 @frappe.whitelist()
 def update_loyalty_account(doc, action):
