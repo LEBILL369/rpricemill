@@ -181,7 +181,7 @@ def name_pos_invoice(doc, action):
 def get_gstno(doc,action):
 	gstin = frappe.get_value("Address",{"name" : doc.customer_address},['gstin'])
 	if gstin:
-		doc.gst_no = gstin
+		doc.gst_no = " "
 	elif doc.tax_id:
 		doc.gst_no = doc.tax_id
 	else:
