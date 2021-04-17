@@ -224,8 +224,9 @@ def scgst(doc,action):
 					cgst = _tax["tax_rate"]
 				if sgst and cgst :
 					break
-			items.sgst = round(items.amount - (items.amount/(1 + (float(sgst)/100))),2)
-			items.cgst = round(items.amount - (items.amount/(1 + (float(cgst)/100))),2)
+			rate = cgst + sgst
+			items.sgst = round((items.amount - (items.amount/(1 + (float(rate)/100))))/2,2)
+			items.cgst = round((items.amount - (items.amount/(1 + (float(rate)/100))))/2,2)
 
 		else:
 			items.sgst = 0
