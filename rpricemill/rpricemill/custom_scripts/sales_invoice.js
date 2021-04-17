@@ -33,6 +33,8 @@ frappe.ui.form.on('Sales Invoice', {
             frm.doc.customer_address = r.message
             frm.doc.shipping_address_name = r.message
             frm.refresh_fields();
+            frm.trigger("customer_address")
+            frm.trigger("shipping_address_name")
           }
         }
       });
