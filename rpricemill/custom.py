@@ -42,6 +42,13 @@ def update_loyality(doc,action):
 			val_point.loyalty_points = value
 			# frappe.db.set_value("Loyalty Point Entry",point_entry[0][0],"")
 			val_point.save(ignore_permissions=True)
+	data_points = get_dashboard_info(doc.doctype, doc.customer)
+	outstanding = 0
+	for data_point in data_points:
+		if data_point['total_unpaid']:
+			outstanding += data_point['total_unpaid']
+	if outstanding:
+		frappe.msgprint(_(doc.customer + " has an outstanding of " + str(outstanding))
 
 @frappe.whitelist()
 def update_loyalty_account(doc, action):
