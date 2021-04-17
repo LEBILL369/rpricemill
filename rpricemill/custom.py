@@ -207,7 +207,6 @@ def scgst(doc,action):
 			for _tax in tax:
 				data = _tax["tax_type"]
 				data = data.split(" - ")
-				print(data)
 				if("SGST" in data):
 					sgst = _tax["tax_rate"]
 				elif("CGST" in data):
