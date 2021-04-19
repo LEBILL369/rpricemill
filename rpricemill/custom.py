@@ -127,9 +127,14 @@ def add_mobile_search(doc, action):
 																		and dl.link_name = customer.name and dl.parent = contact.name
 																		where customer.name = %s
 																		group by phone.phone""", doc.name, as_dict = 1)
+	number_ = ""
 	if len(phone_numbers):
-		if 'all_numbers' in phone_numbers[0]:
-			doc.mobile_search = phone_numbers[0]['all_numbers']
+		for number in range(len(phone_numbers)):
+			if 'all_numbers' in phone_numbers[number]:
+				number_ += phone_numbers[number]['all_numbers']
+			if(number != len(phone_numbers) - 1):
+				number_  += ","
+	doc.mobile_search = number_
 
 def add_vehicle_log(doc, action):
 	if doc.delivering_driver and doc.vehicle and (doc.current_odometer_value or doc.return_odometer_value):
