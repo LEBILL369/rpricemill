@@ -188,5 +188,6 @@ doctype_js = {
 	"Purchase Invoice" :  "rpricemill/custom_scripts/purchase_invoice.js",
 	"Purchase Order" :  "rpricemill/custom_scripts/purchase_order.js",
 	"Purchase Receipt" :  "rpricemill/custom_scripts/purchase_receipt.js",
-	"Delivery Note" :  "rpricemill/custom_scripts/delivery_note.js"
+	"Delivery Note" :  "rpricemill/custom_scripts/delivery_note.js",
+	"Payment Entry" :  "rpricemill/custom_scripts/payment_entry.js"
 	}

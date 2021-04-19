@@ -235,6 +235,10 @@ def scgst(doc,action):
 def get_address(store_branch):
 	return(frappe.get_value("Address",{"store_branch" : store_branch},'name'))
 
+@frappe.whitelist()
+def get_mobile_number(customer):
+	return(frappe.get_value("Customer",{"name" : customer},'mobile_no'))
+
 
 @frappe.whitelist()
 def create_events_from_vehicle_remainder(doc, action):
