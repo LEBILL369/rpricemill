@@ -149,13 +149,13 @@ doc_events = {
 	},
 	"Sales Invoice" : {
 		"on_submit" : ["rpricemill.custom.update_loyality", "rpricemill.custom.add_vehicle_log"],
-		"validate": ["rpricemill.custom.update_loyalty_account","rpricemill.custom.get_gstno","rpricemill.custom.scgst"],
+		"validate": ["rpricemill.custom.update_loyalty_account","rpricemill.custom.get_gstno","rpricemill.custom.scgst","rpricemill.custom.pos_batch"],
 		"autoname": "rpricemill.custom.name_sales_invoice",
 		"on_update_after_submit": "rpricemill.custom.add_vehicle_log"
 	},
 	"POS Invoice" : {
 		"on_submit" : "rpricemill.custom.update_loyality",
-		"validate": "rpricemill.custom.update_loyalty_account",
+		"validate": ["rpricemill.custom.update_loyalty_account","rpricemill.custom.pos_batch"],
 		"autoname": "rpricemill.custom.name_pos_invoice"
 	},
 	"Vehicle": {

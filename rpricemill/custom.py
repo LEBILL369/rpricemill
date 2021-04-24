@@ -9,6 +9,21 @@ from erpnext.accounts.utils import get_fiscal_year
 from datetime import datetime, timedelta
 from frappe.utils import  get_link_to_form
 
+def pos_batch(doc,action):
+	if(doc.pos_profile):
+		branch = frappe.get_value("POS Profile",{"name" : doc.pos_profile},"branch")
+		if branch:
+			if not doc.branch:
+				doc.branch = branch
+			for item in doc.items:
+				if not item.branch:
+					item.branch = branch
+			for tax in doc.taxes:
+				if not tax.branch:
+					tax.branch = branch
+		else:
+			frappe.throw("Branch Not Available in POS Profile")
+
 
 def contact_before_save(doc, action):
 	nos = []
@@ -305,3 +320,4 @@ def create_events_from_vehicle_remainder(doc, action):
 					event.repeat_this_event = 0
 				event.description = prop.remarks
 				event.save(ignore_permissions=True)
+
