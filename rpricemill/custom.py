@@ -321,3 +321,9 @@ def create_events_from_vehicle_remainder(doc, action):
 				event.description = prop.remarks
 				event.save(ignore_permissions=True)
 
+@frappe.whitelist()
+def pos_qty(value,doc):
+	qty = 0
+	for item in doc.items:
+		qty += float(item.qty)
+	return(qty)

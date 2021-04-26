@@ -144,50 +144,55 @@ app_license = "MIT"
 # auto_cancel_exempted_doctypes = ["Auto Repeat"]
 
 doc_events = {
-	"Contact": {
-		"before_save": "rpricemill.custom.contact_before_save"
-	},
-	"Sales Invoice" : {
-		"on_submit" : ["rpricemill.custom.update_loyality", "rpricemill.custom.add_vehicle_log"],
-		"validate": ["rpricemill.custom.update_loyalty_account","rpricemill.custom.get_gstno","rpricemill.custom.scgst","rpricemill.custom.pos_batch"],
-		"autoname": "rpricemill.custom.name_sales_invoice",
-		"on_update_after_submit": "rpricemill.custom.add_vehicle_log"
-	},
-	"POS Invoice" : {
-		"on_submit" : "rpricemill.custom.update_loyality",
-		"validate": ["rpricemill.custom.update_loyalty_account","rpricemill.custom.pos_batch"],
-		"autoname": "rpricemill.custom.name_pos_invoice"
-	},
-	"Vehicle": {
-		"validate": "rpricemill.custom.create_events_from_vehicle_remainder"
-	},
-	"Customer": {
-		"validate": "rpricemill.custom.add_mobile_search",
-	},
-	"Purchase Order": {
-		"autoname": "rpricemill.custom.name_purchase_order"
-	},
-	"Purchase Receipt": {
-		"autoname": "rpricemill.custom.name_purchase_receipt"
-	},
-	"Purchase Invoice": {
-		"autoname": "rpricemill.custom.name_purchase_invoice"
-	},
-	"Sales Order": {
-		"autoname": "rpricemill.custom.name_sales_order"
-	},
-	"Payment Entry": {
-		"autoname": "rpricemill.custom.name_payment_entry"
-	}
+    "Contact": {
+        "before_save": "rpricemill.custom.contact_before_save"
+    },
+    "Sales Invoice": {
+        "on_submit": ["rpricemill.custom.update_loyality", "rpricemill.custom.add_vehicle_log"],
+        "validate": ["rpricemill.custom.update_loyalty_account", "rpricemill.custom.get_gstno", "rpricemill.custom.scgst", "rpricemill.custom.pos_batch"],
+        "autoname": "rpricemill.custom.name_sales_invoice",
+        "on_update_after_submit": "rpricemill.custom.add_vehicle_log"
+    },
+    "POS Invoice": {
+        "on_submit": "rpricemill.custom.update_loyality",
+        "validate": ["rpricemill.custom.update_loyalty_account", "rpricemill.custom.pos_batch"],
+        "autoname": "rpricemill.custom.name_pos_invoice"
+    },
+    "Vehicle": {
+        "validate": "rpricemill.custom.create_events_from_vehicle_remainder"
+    },
+    "Customer": {
+        "validate": "rpricemill.custom.add_mobile_search",
+    },
+    "Purchase Order": {
+        "autoname": "rpricemill.custom.name_purchase_order"
+    },
+    "Purchase Receipt": {
+        "autoname": "rpricemill.custom.name_purchase_receipt"
+    },
+    "Purchase Invoice": {
+        "autoname": "rpricemill.custom.name_purchase_invoice"
+    },
+    "Sales Order": {
+        "autoname": "rpricemill.custom.name_sales_order"
+    },
+    "Payment Entry": {
+        "autoname": "rpricemill.custom.name_payment_entry"
+    }
 }
 
 doctype_js = {
-	"POS Closing Entry" : "rpricemill/custom_scripts/denominations.js",
-	"Sales Invoice": "rpricemill/custom_scripts/sales_invoice.js",
-	"Sales Order" :  "rpricemill/custom_scripts/sales_order.js",
-	"Purchase Invoice" :  "rpricemill/custom_scripts/purchase_invoice.js",
-	"Purchase Order" :  "rpricemill/custom_scripts/purchase_order.js",
-	"Purchase Receipt" :  "rpricemill/custom_scripts/purchase_receipt.js",
-	"Delivery Note" :  "rpricemill/custom_scripts/delivery_note.js",
-	"Payment Entry" :  "rpricemill/custom_scripts/payment_entry.js"
-	}
+    "POS Closing Entry": "rpricemill/custom_scripts/denominations.js",
+    "Sales Invoice": "rpricemill/custom_scripts/sales_invoice.js",
+    "Sales Order":  "rpricemill/custom_scripts/sales_order.js",
+    "Purchase Invoice":  "rpricemill/custom_scripts/purchase_invoice.js",
+    "Purchase Order":  "rpricemill/custom_scripts/purchase_order.js",
+    "Purchase Receipt":  "rpricemill/custom_scripts/purchase_receipt.js",
+    "Delivery Note":  "rpricemill/custom_scripts/delivery_note.js",
+    "Payment Entry":  "rpricemill/custom_scripts/payment_entry.js"
+}
+
+jenv = {"methods": [
+	"pos_qty:rpricemill.custom.pos_qty"
+                    ]
+        }
