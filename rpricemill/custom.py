@@ -327,3 +327,41 @@ def pos_qty(value,doc):
 	for item in doc.items:
 		qty += float(item.qty)
 	return(qty)
+
+@frappe.whitelist()
+def get_sales_summary(company):
+	date_ = datetime.now()
+	date_ = date_.date()
+	str_date = str(date_)
+	_date = datetime.strptime(str_date,"%Y-%m-%d")
+	existing_customer = frappe.db.sql("""select count(si.name) as count,sum(grand_total) as sales from `tabSales Invoice` as si inner join `tabCustomer` as cos on cos.name = si.customer where si.posting_date = %s and si.company = %s and cos.creation < %s""",(date_,company,_date),as_dict = 1)
+	new_customer = frappe.db.sql("""select count(si.name) as count,sum(grand_total) as sales from `tabSales Invoice` as si inner join `tabCustomer` as cos on cos.name = si.customer where si.posting_date = %s and si.company = %s and cos.creation >= %s""",(date_,company,_date),as_dict = 1)
+	outstanding = frappe.db.sql("""select count(si.name) as count,sum(outstanding_amount) as sales from `tabSales Invoice` as si inner join `tabCustomer` as cos on cos.name = si.customer where si.posting_date = %s and si.company = %s and cos.creation >= %s and  si.outstanding_amount > %s""",(date_,company,_date,"0"),as_dict = 1)
+	total_count = 0
+	total_sales = 0
+	final_result = []
+	if len(existing_customer):
+		existing_customer = existing_customer[0].update({"particular": "Existing Customer"})
+		if existing_customer["count"]:
+			total_count += int(existing_customer["count"])
+		if existing_customer["sales"]:
+			total_sales += float(existing_customer["sales"])
+		else:
+			existing_customer["sales"] = 0 
+		final_result.append(existing_customer)
+	if len(new_customer):
+		new_customer = new_customer[0].update({"particular": "New Customer"})
+		if new_customer["count"]:
+			total_count += int(new_customer["count"])
+		if new_customer["sales"]:
+			total_sales += float(new_customer["sales"])
+		else:
+			new_customer["sales"] = 0 
+		final_result.append(new_customer)
+	if len(outstanding):
+		outstanding = outstanding[0].update({"particular": "Outstanding"})
+		if not outstanding["sales"]:
+			outstanding["sales"] = 0 
+		final_result.append(outstanding)
+	final_result.append({"particular": "Total","count":total_count,"sales":total_sales})
+	return(final_result)

@@ -4,6 +4,18 @@ frappe.ui.form.on('POS Closing Entry', {
         { 'currency': 50, 'count': 0 }, { 'currency': 20, 'count': 0 }, { 'currency': 10, 'count': 0 }, { 'currency': 5, 'count': 0 }, { 'currency': 2, 'count': 0 },
         { 'currency': 1, 'count': 0 }, { 'currency': 0.50, 'count': 0 }];
         frm.set_value('denominations', curr);
+        frappe.call({
+            method: "rpricemill.custom.get_sales_summary",
+            args: {
+                company: frm.doc.company,
+            },
+            callback: function (r) {
+                if (r.message) {
+                    frm.doc.sales_summary = r.message
+                    frm.refresh_fields();
+                }
+            }
+        });
         frm.refresh_fields();
     },
     get_current_balance: function (frm) {
@@ -34,7 +46,6 @@ frappe.ui.form.on('POS Closing Entry', {
         for (var y = 0; y < frm.doc.payment_reconciliation.length; y++) {
             if (frm.doc.payment_reconciliation[y].mode_of_payment == 'Cash') {
                 frm.doc.payment_reconciliation[y]['closing_amount'] = cash_amount;
-
             }
         }
         frm.refresh_fields();

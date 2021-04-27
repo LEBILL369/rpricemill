@@ -1,0 +1,44 @@
+{
+ "actions": [],
+ "creation": "2021-04-27 14:02:48.359423",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "particular",
+  "count",
+  "sales"
+ ],
+ "fields": [
+  {
+   "fieldname": "particular",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Particular"
+  },
+  {
+   "fieldname": "count",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Count"
+  },
+  {
+   "fieldname": "sales",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Sales"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2021-04-27 14:03:08.511379",
+ "modified_by": "Administrator",
+ "module": "rpricemill",
+ "name": "Sales Summary",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

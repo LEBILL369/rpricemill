@@ -193,6 +193,6 @@ doctype_js = {
 }
 
 jenv = {"methods": [
-	"pos_qty:rpricemill.custom.pos_qty"
-                    ]
+        "pos_qty:rpricemill.custom.pos_qty"
+        ]
         }
