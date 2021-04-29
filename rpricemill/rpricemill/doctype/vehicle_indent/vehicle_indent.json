@@ -15,7 +15,6 @@
   "branch",
   "section_break_7",
   "vehicle_indent_details",
-  "amended_from",
   "amended_from"
  ],
  "fields": [
@@ -49,13 +48,13 @@
    "fetch_from": "vehicle.last_odometer",
    "fieldname": "last_odometer_value",
    "fieldtype": "Int",
-   "label": "last Odometer Value "
+   "label": "Last Odometer Value "
   },
   {
    "fieldname": "current_odometer_value",
    "fieldtype": "Int",
    "in_list_view": 1,
-   "label": "Current Odometer value ",
+   "label": "Current Odometer Value ",
    "reqd": 1
   },
   {
@@ -97,7 +96,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2021-04-29 18:19:04.495519",
+ "modified": "2021-04-29 19:58:17.815531",
  "modified_by": "Administrator",
  "module": "rpricemill",
  "name": "Vehicle Indent",
@@ -112,7 +111,9 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "select": 1,
    "share": 1,
+   "submit": 1,
    "write": 1
   }
  ],

@@ -7,10 +7,10 @@
  "field_order": [
   "service_item",
   "account",
-  "qty",
-  "expense",
   "party_type",
   "party",
+  "qty",
+  "expense",
   "description",
   "type",
   "frequency"
@@ -80,7 +80,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2021-04-29 17:36:30.128948",
+ "modified": "2021-04-29 19:59:56.254856",
  "modified_by": "Administrator",
  "module": "rpricemill",
  "name": "Vehicle Indent Details",
