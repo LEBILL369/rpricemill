@@ -17,6 +17,8 @@ class VehicleIndent(Document):
 		date_ = date_.date()
 		for details in self.vehicle_indent_details:
 			account = []
+			if not details.expense:
+				frappe.throw("Please enter expense and quantity")
 			if details.service_item == "Fuel":
 				fuel = details.qty
 				fuel_expense = details.expense
@@ -27,6 +29,8 @@ class VehicleIndent(Document):
 			account.append({"account" : details.account,"party_type" : details.party_type,"party":details.party,"branch":self.branch,"cost_center":self.cost_center,"credit_in_account_currency":details.expense})
 			if len(service_account):
 				account.append({"account" : service_account[0][0],"branch":self.branch,"debit_in_account_currency":details.expense,"cost_center":self.cost_center})
+			else:
+				frappe.throw("Please Provide Company Account Details for <b>" + str(details.service_item)+"</b> in <b>  Vehicle Log Property </b> ")
 			create_journal_entry(self.company,account,date_)
 		vehicle_log = frappe.get_doc({
 			"doctype" : "Vehicle Log",
@@ -47,4 +51,3 @@ def create_journal_entry(company,account,date_):
 			"posting_date" : date_,
 			"accounts" : account
 		}).submit()
-
