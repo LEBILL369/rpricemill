@@ -13,6 +13,7 @@
   "last_odometer_value",
   "current_odometer_value",
   "branch",
+  "cost_center",
   "section_break_7",
   "vehicle_indent_details",
   "amended_from"
@@ -91,12 +92,18 @@
    "options": "Vehicle Indent",
    "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2021-04-29 19:58:17.815531",
+ "modified": "2021-04-30 11:13:48.512683",
  "modified_by": "Administrator",
  "module": "rpricemill",
  "name": "Vehicle Indent",

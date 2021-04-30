@@ -7,7 +7,7 @@ import frappe
 from frappe.model.document import Document
 from datetime import date,datetime 
 class VehicleIndent(Document):
-	def on_submit(self):
+	def on_submit(self):		
 		fuel = 0 
 		fuel_expense = 0
 		supplier = ""
@@ -24,9 +24,9 @@ class VehicleIndent(Document):
 			else:
 				service.append({"service_item" : details.service_item, "type" : details.type, "frequency" : details.frequency, "expense_amount" : details.expense})
 			service_account = frappe.db.sql("""select sca.account from `tabVehicle Log Property` as vlp inner join `tabSalary Component Account` as sca on sca.parent = vlp.name where vlp.name = %s and sca.company = %s""",(details.service_item,self.company))
-			account.append({"account" : details.account,"party_type" : details.party_type,"party":details.party,"branch":self.branch,"credit_in_account_currency":details.expense})
+			account.append({"account" : details.account,"party_type" : details.party_type,"party":details.party,"branch":self.branch,"cost_center":self.cost_center,"credit_in_account_currency":details.expense})
 			if len(service_account):
-				account.append({"account" : service_account[0][0],"branch":self.branch,"debit_in_account_currency":details.expense})
+				account.append({"account" : service_account[0][0],"branch":self.branch,"debit_in_account_currency":details.expense,"cost_center":self.cost_center})
 			create_journal_entry(self.company,account,date_)
 		vehicle_log = frappe.get_doc({
 			"doctype" : "Vehicle Log",

@@ -9,7 +9,14 @@ frappe.ui.form.on('Vehicle Indent', {
 				"company" : frm.doc.company,
 			  },
 			};
-		}
+		},
+		frm.set_query('cost_center', function(doc) {
+			return {
+				filters: {
+					"company": doc.company
+				}
+			};
+		});
 	}
 });
 
