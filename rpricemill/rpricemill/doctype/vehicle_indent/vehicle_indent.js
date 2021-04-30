@@ -10,6 +10,13 @@ frappe.ui.form.on('Vehicle Indent', {
 			  },
 			};
 		},
+		frm.fields_dict['vehicle_indent_details'].grid.get_field("party_type").get_query = function(doc) {
+			return {
+			  filters:  {
+				"name" : ['in', ["Customer","Supplier","Donor","Employee","Student","Shareholder","Member"]],
+			  },
+			};
+		},
 		frm.set_query('cost_center', function(doc) {
 			return {
 				filters: {
