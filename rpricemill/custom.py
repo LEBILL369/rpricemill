@@ -365,3 +365,14 @@ def get_sales_summary(company):
 		final_result.append(outstanding)
 	final_result.append({"particular": "Total","count":total_count,"sales":total_sales})
 	return(final_result)
+
+@frappe.whitelist()
+def get_recent_items_from_pos(filters,fields,limit):
+	value = frappe.db.sql("""select 
+				pit.item_name as name,pit.amount as grand_total,pi.posting_date,pi.posting_time,
+				pi.price_list_currency as currency,concat(FORMAT(pit.qty,2),' QTY') as status,CONCAT(DATEDIFF(CURDATE(),
+				pi.posting_date),' Days ago') as day_count 
+				from `tabPOS Invoice` as pi inner join `tabPOS Invoice Item` as pit on pit.parent = pi.name
+				where pi.customer = %s and pi.docstatus = '1'
+				order by pi.creation desc limit 20""",(filters),as_dict = 1)
+	return(value)
