@@ -369,10 +369,10 @@ def get_sales_summary(company):
 @frappe.whitelist()
 def get_recent_items_from_pos(filters,fields,limit):
 	value = frappe.db.sql("""select 
-				pit.item_name as name,pit.amount as grand_total,pi.posting_date,pi.posting_time,
-				pi.price_list_currency as currency,concat(FORMAT(pit.qty,2),' QTY') as status,CONCAT(DATEDIFF(CURDATE(),
-				pi.posting_date),' Days ago') as day_count 
-				from `tabPOS Invoice` as pi inner join `tabPOS Invoice Item` as pit on pit.parent = pi.name
-				where pi.customer = %s and pi.docstatus = '1'
-				order by pi.creation desc limit 20""",(filters),as_dict = 1)
+				ifnull(concat("  (",sit.branch,")"),concat("  (",sit.warehouse,")")) as branch,sit.item_name as name,sit.amount as grand_total,si.posting_date,si.posting_time,
+				si.price_list_currency as currency,concat(FORMAT(sit.qty,2),' QTY') as status,CONCAT(DATEDIFF(CURDATE(),
+				si.posting_date),' Days ago') as day_count 
+				from `tabSales Invoice` as si inner join `tabSales Invoice Item` as sit on sit.parent = si.name
+				where si.customer = %s and si.docstatus = '1'
+				order by si.creation desc limit 20""",(filters),as_dict = 1)
 	return(value)
