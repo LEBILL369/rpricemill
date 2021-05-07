@@ -368,11 +368,38 @@ def get_sales_summary(company):
 
 @frappe.whitelist()
 def get_recent_items_from_pos(filters,fields,limit):
-	value = frappe.db.sql("""select 
-				ifnull(concat("  (",sit.branch,")"),concat("  (",sit.warehouse,")")) as branch,sit.item_name as name,sit.amount as grand_total,si.posting_date,si.posting_time,
-				si.price_list_currency as currency,concat(FORMAT(sit.qty,2),' QTY') as status,CONCAT(DATEDIFF(CURDATE(),
-				si.posting_date),' Days ago') as day_count 
-				from `tabSales Invoice` as si inner join `tabSales Invoice Item` as sit on sit.parent = si.name
-				where si.customer = %s and si.docstatus = '1'
-				order by si.creation desc limit 20""",(filters),as_dict = 1)
+	value = frappe.db.sql("""select chld.branch as branch,
+    chld.name as name,
+    chld.grand_total as grand_total,
+    chld.posting_date as posting_date,
+    chld.posting_time as posting_time,
+    chld.currency as currency,
+    chld.status as status,
+    chld.day_count as day_count,
+    cpy.abbr as abbrivation
+    from `tabCompany` as cpy
+    inner join (
+        select ifnull(
+                concat("  (", sit.branch, ")"),
+                concat("  (", sit.warehouse, ")")
+            ) as branch,
+            sit.item_name as name,
+            sit.amount as grand_total,
+            si.posting_date,
+            si.posting_time,
+            si.price_list_currency as currency,
+            concat(FORMAT(sit.qty, 2), ' QTY') as status,
+            CONCAT(
+                DATEDIFF(CURDATE(), si.posting_date),
+                ' Days ago'
+            ) as day_count,
+            si.company,
+            si.customer
+        from `tabSales Invoice` as si
+            inner join `tabSales Invoice Item` as sit on sit.parent = si.name
+        WHERE si.docstatus = '1'
+        order by si.creation desc
+    ) as chld on chld.company = cpy.name
+where chld.customer = %s
+limit 20""",(filters),as_dict = 1)
 	return(value)
