@@ -372,12 +372,13 @@ def get_recent_items_from_pos(filters,fields,limit):
     chld.name as name,
     chld.grand_total as grand_total,
     chld.posting_date as posting_date,
+    chld.creation,
     chld.posting_time as posting_time,
     chld.currency as currency,
     chld.status as status,
     chld.day_count as day_count,
     cpy.abbr as abbrivation
-    from `tabCompany` as cpy
+from `tabCompany` as cpy
     inner join (
         select ifnull(
                 concat("  (", sit.branch, ")"),
@@ -386,6 +387,7 @@ def get_recent_items_from_pos(filters,fields,limit):
             sit.item_name as name,
             sit.amount as grand_total,
             si.posting_date,
+            si.creation,
             si.posting_time,
             si.price_list_currency as currency,
             concat(FORMAT(sit.qty, 2), ' QTY') as status,
@@ -398,8 +400,8 @@ def get_recent_items_from_pos(filters,fields,limit):
         from `tabSales Invoice` as si
             inner join `tabSales Invoice Item` as sit on sit.parent = si.name
         WHERE si.docstatus = '1'
-        order by si.creation desc
     ) as chld on chld.company = cpy.name
 where chld.customer = %s
+order by chld.creation desc
 limit 20""",(filters),as_dict = 1)
 	return(value)
