@@ -4,19 +4,49 @@ frappe.ui.form.on('POS Closing Entry', {
         { 'currency': 50, 'count': 0 }, { 'currency': 20, 'count': 0 }, { 'currency': 10, 'count': 0 }, { 'currency': 5, 'count': 0 }, { 'currency': 2, 'count': 0 },
         { 'currency': 1, 'count': 0 }, { 'currency': 0.50, 'count': 0 }];
         frm.set_value('denominations', curr);
-        frappe.call({
-            method: "rpricemill.custom.get_sales_summary",
-            args: {
-                company: frm.doc.company,
-            },
-            callback: function (r) {
-                if (r.message) {
-                    frm.doc.sales_summary = r.message
-                    frm.refresh_fields();
+        if (frm.doc.pos_profile) {
+            frappe.call({
+                method: "rpricemill.custom.get_sales_summary",
+                args: {
+                    company: frm.doc.company,
+                    pos_profile: frm.doc.pos_profile,
+                },
+                callback: function (r) {
+                    if (r.message) {
+                        frm.doc.sales_summary = r.message
+                        frm.refresh_fields("sales_summary");
+                    }
                 }
-            }
-        });
+            });
+        }
         frm.refresh_fields();
+    },
+    get_target_summary: function (frm) {
+        if (frm.doc.pos_profile) {
+            frappe.call({
+                method: "rpricemill.custom.get_target_summary",
+                args: {
+                    company: frm.doc.company,
+                    pos_profile: frm.doc.pos_profile,
+                    posting_date: frm.doc.posting_date,
+                },
+                callback: function (result) {
+                    if (result.message) {
+                        var object = new Array();
+                        var n = 0;
+                        console.log(result.message)
+                        for (let i in result.message) {
+                            object[n] = frm.add_child("target_summary");
+                            object[n].target = result.message[i].target;
+                            object[n].target_amount = result.message[i].target_amount;
+                            object[n].sales_amount = result.message[i].sales_amount;
+                            n += 1
+                            frm.refresh_fields("target_summary");
+                        }
+                    }
+                }
+            });
+        }
     },
     get_current_balance: function (frm) {
         for (var i = 0; i < (frm.doc.payment_reconciliation).length; i++) {

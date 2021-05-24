@@ -9,6 +9,33 @@ from erpnext.accounts.utils import get_fiscal_year
 from datetime import datetime, timedelta
 from frappe.utils import  get_link_to_form
 
+def rice_allert(doc,action):
+	count = frappe.db.sql("""select count(*)
+							from (
+							        select sales.name,
+							            sales.posting_date,
+							            item.item_code,
+							            sales.customer,
+							            item.item_group
+							        from (
+							                SELECT si.name,
+							                    si.posting_date,
+							                    sit.item_code,
+							                    si.customer
+							                from `tabSales Invoice` as si
+							                    inner join `tabSales Invoice Item` as sit on sit.parent = si.name
+							            ) as sales
+							            inner join `tabItem` as item on item.name = sales.item_code
+							    ) as grp
+							    inner join `tabItem Group` as igrp on grp.item_group = igrp.name
+							WHERE grp.posting_date BETWEEN date_sub(curdate(), INTERVAL 10 DAY)
+							    and curdate()
+							    and grp.customer = %s
+							    and igrp.rp_item_group_primary like %s""",(doc.customer,"Rice"))
+	if not count[0][0]:
+		frappe.msgprint("Customer did not buy any item of group Rice")
+
+
 def pos_batch(doc,action):
 	if(doc.pos_profile):
 		branch = frappe.get_value("POS Profile",{"name" : doc.pos_profile},"branch")
@@ -57,8 +84,24 @@ def update_loyality(doc,action):
 		if(len(point_entry)):
 			val_point = frappe.get_doc("Loyalty Point Entry",point_entry[0][0])
 			val_point.loyalty_points = value
-			# frappe.db.set_value("Loyalty Point Entry",point_entry[0][0],"")
 			val_point.save(ignore_permissions=True)
+			new_customer = frappe.db.sql("""select count(*) from `tabSales Invoice` where customer = %s""",(doc.customer))
+			if new_customer[0][0] == 1:
+				refrel_value = value / 2
+				ref_customer = frappe.get_value("Customer",{"name":doc.customer},"referred_customer")
+				if ref_customer:
+					frappe.get_doc({
+						"doctype" : "Loyalty Point Entry",
+						"loyalty_program" : val_point.loyalty_program,
+						"loyalty_program_tier" : val_point.loyalty_program_tier,
+						"customer" : ref_customer,
+						"loyalty_points" : refrel_value,
+						"expiry_date" : val_point.expiry_date,
+						"posting_date": val_point.posting_date,
+						"company" : val_point.company
+					}).save(ignore_permissions = True)
+
+
 	data_points = get_dashboard_info('Customer', doc.customer)
 	outstanding = 0
 	for data_point in data_points:
@@ -133,6 +176,11 @@ def get_account(company):
 	doc = frappe.get_doc("Company",company)
 	return(doc.loyalty_redemption_expense_account)
 
+def save_customer(doc,action):
+	for links in doc.links:
+		if(links.link_doctype == "Customer"):
+			customer = frappe.get_doc("Customer",links.link_name)
+			customer.save()
 
 def add_mobile_search(doc, action):
 	phone_numbers = frappe.db.sql("""select group_concat(phone.phone) as all_numbers from tabCustomer as customer inner join
@@ -329,14 +377,14 @@ def pos_qty(value,doc):
 	return(qty)
 
 @frappe.whitelist()
-def get_sales_summary(company):
+def get_sales_summary(company,pos_profile):
 	date_ = datetime.now()
 	date_ = date_.date()
 	str_date = str(date_)
 	_date = datetime.strptime(str_date,"%Y-%m-%d")
-	existing_customer = frappe.db.sql("""select count(si.name) as count,sum(grand_total) as sales from `tabSales Invoice` as si inner join `tabCustomer` as cos on cos.name = si.customer where si.posting_date = %s and si.company = %s and cos.creation < %s""",(date_,company,_date),as_dict = 1)
-	new_customer = frappe.db.sql("""select count(si.name) as count,sum(grand_total) as sales from `tabSales Invoice` as si inner join `tabCustomer` as cos on cos.name = si.customer where si.posting_date = %s and si.company = %s and cos.creation >= %s""",(date_,company,_date),as_dict = 1)
-	outstanding = frappe.db.sql("""select count(si.name) as count,sum(outstanding_amount) as sales from `tabSales Invoice` as si inner join `tabCustomer` as cos on cos.name = si.customer where si.posting_date = %s and si.company = %s and cos.creation >= %s and  si.outstanding_amount > %s""",(date_,company,_date,"0"),as_dict = 1)
+	existing_customer = frappe.db.sql("""select count(si.name) as count,sum(grand_total) as sales from `tabSales Invoice` as si inner join `tabCustomer` as cos on cos.name = si.customer where si.posting_date = %s and si.company = %s and cos.creation < %s and si.pos_profile = %s""",(date_,company,_date,pos_profile),as_dict = 1)
+	new_customer = frappe.db.sql("""select count(si.name) as count,sum(grand_total) as sales from `tabSales Invoice` as si inner join `tabCustomer` as cos on cos.name = si.customer where si.posting_date = %s and si.company = %s and cos.creation >= %s and si.pos_profile = %s""",(date_,company,_date,pos_profile),as_dict = 1)
+	# outstanding = frappe.db.sql("""select count(si.name) as count,sum(outstanding_amount) as sales from `tabSales Invoice` as si inner join `tabCustomer` as cos on cos.name = si.customer where si.posting_date = %s and si.company = %s and cos.creation >= %s and  si.outstanding_amount > %s""",(date_,company,_date,"0"),as_dict = 1)
 	total_count = 0
 	total_sales = 0
 	final_result = []
@@ -358,50 +406,72 @@ def get_sales_summary(company):
 		else:
 			new_customer["sales"] = 0 
 		final_result.append(new_customer)
-	if len(outstanding):
-		outstanding = outstanding[0].update({"particular": "Outstanding"})
-		if not outstanding["sales"]:
-			outstanding["sales"] = 0 
-		final_result.append(outstanding)
+	# if len(outstanding):
+	# 	outstanding = outstanding[0].update({"particular": "Outstanding"})
+	# 	if not outstanding["sales"]:
+	# 		outstanding["sales"] = 0 
+	# 	final_result.append(outstanding)
 	final_result.append({"particular": "Total","count":total_count,"sales":total_sales})
 	return(final_result)
 
 @frappe.whitelist()
+def get_target_summary(company,pos_profile,posting_date):
+	print(pos_profile)
+	starting_date = posting_date.split("-")
+	starting_date[2] = "01" 
+	starting_date = starting_date[0] + "-" + starting_date[1] + "-" + starting_date[2] 
+	starting_date = datetime.strptime(starting_date,"%Y-%m-%d").date()
+	posting_date = datetime.strptime(posting_date,"%Y-%m-%d").date()
+	annual = frappe.db.sql("""select sum(grand_total) from `tabSales Invoice` where company = %s and pos_profile = %s""",(company,pos_profile))
+	monthly = frappe.db.sql("""select sum(grand_total) from `tabSales Invoice` where company = %s and pos_profile = %s and posting_date between %s and %s""",(company,pos_profile,starting_date,posting_date))
+	branch = frappe.get_value("POS Profile",{"name": pos_profile},"branch")
+	print(branch)
+	target = frappe.get_list("Branch",{"name" : branch},['monthly_target','annual_target_'])
+	print(target)
+	print(annual)
+
+	target_summary = []
+	target_summary.append({"target":"Monthly","target_amount" : target[0]["monthly_target"],"sales_amount" : monthly[0][0]})
+	target_summary.append({"target":"Annual","target_amount" : target[0]["annual_target_"],"sales_amount" : annual[0][0]})
+	print(target_summary)
+	return(target_summary)
+
+@frappe.whitelist()
 def get_recent_items_from_pos(filters,fields,limit):
 	value = frappe.db.sql("""select chld.branch as branch,
-    chld.name as name,
-    chld.grand_total as grand_total,
-    chld.posting_date as posting_date,
-    chld.creation,
-    chld.posting_time as posting_time,
-    chld.currency as currency,
-    chld.status as status,
-    chld.day_count as day_count,
-    cpy.abbr as abbrivation
-from `tabCompany` as cpy
-    inner join (
-        select ifnull(
-                concat("  (", sit.branch, ")"),
-                concat("  (", sit.warehouse, ")")
-            ) as branch,
-            sit.item_name as name,
-            sit.amount as grand_total,
-            si.posting_date,
-            si.creation,
-            si.posting_time,
-            si.price_list_currency as currency,
-            concat(FORMAT(sit.qty, 2), ' QTY') as status,
-            CONCAT(
-                DATEDIFF(CURDATE(), si.posting_date),
-                ' Days ago'
-            ) as day_count,
-            si.company,
-            si.customer
-        from `tabSales Invoice` as si
-            inner join `tabSales Invoice Item` as sit on sit.parent = si.name
-        WHERE si.docstatus = '1'
-    ) as chld on chld.company = cpy.name
-where chld.customer = %s
-order by chld.creation desc
-limit 20""",(filters),as_dict = 1)
+								    chld.name as name,
+								    chld.grand_total as grand_total,
+								    chld.posting_date as posting_date,
+								    chld.creation,
+								    chld.posting_time as posting_time,
+								    chld.currency as currency,
+								    chld.status as status,
+								    chld.day_count as day_count,
+								    cpy.abbr as abbrivation
+								from `tabCompany` as cpy
+								    inner join (
+								        select ifnull(
+								                concat("  (", sit.branch, ")"),
+								                concat("  (", sit.warehouse, ")")
+								            ) as branch,
+								            sit.item_name as name,
+								            sit.amount as grand_total,
+								            si.posting_date,
+								            si.creation,
+								            si.posting_time,
+								            si.price_list_currency as currency,
+								            concat(FORMAT(sit.qty, 2), ' QTY') as status,
+								            CONCAT(
+								                DATEDIFF(CURDATE(), si.posting_date),
+								                ' Days ago'
+								            ) as day_count,
+								            si.company,
+								            si.customer
+								        from `tabSales Invoice` as si
+								            inner join `tabSales Invoice Item` as sit on sit.parent = si.name
+								        WHERE si.docstatus = '1'
+								    ) as chld on chld.company = cpy.name
+								where chld.customer = %s
+								order by chld.creation desc
+								limit 20""",(filters),as_dict = 1)
 	return(value)

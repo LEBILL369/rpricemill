@@ -145,6 +145,7 @@ app_license = "MIT"
 
 doc_events = {
     "Contact": {
+        "on_update": "rpricemill.custom.save_customer",
         "before_save": "rpricemill.custom.contact_before_save"
     },
     "Sales Invoice": {
@@ -154,7 +155,7 @@ doc_events = {
         "on_update_after_submit": "rpricemill.custom.add_vehicle_log"
     },
     "POS Invoice": {
-        "on_submit": "rpricemill.custom.update_loyality",
+        "on_submit": ["rpricemill.custom.update_loyality","rpricemill.custom.rice_allert"],
         "validate": ["rpricemill.custom.update_loyalty_account", "rpricemill.custom.pos_batch"],
         "autoname": "rpricemill.custom.name_pos_invoice"
     },
